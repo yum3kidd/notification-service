@@ -1,0 +1,18 @@
+venv\Scripts\activate
+docker-compose up -d
+pip install -r requirements.txt
+
+
+cd desktop/notification-service
+
+
+python -c "import sqlite3; conn = sqlite3.connect('notifications.db'); cur = conn.cursor(); cur.execute('SELECT * FROM notifications'); print(cur.fetchall())"
+
+curl -X POST "http://127.0.0.1:8000/api/notify" -H "Content-Type: application/json" -d "{\"template_id\":1,\"information_system_id\":1,\"user_mobile_phone\":\"+79991234567\",\"user_email\":\"test@example.com\",\"transport\":\"email\"}"
+
+-Добавление пользователя-
+python -c "import sqlite3; conn = sqlite3.connect('notifications.db'); conn.execute('INSERT INTO mobile_users (phone_number, email) VALUES (\"89301150444\", \"2polz@user.com\")'); conn.commit(); print('Пользователь добавлен')"
+-Добавление шаблона-
+python -c "import sqlite3; conn = sqlite3.connect('notifications.db'); conn.execute('INSERT INTO notification_templates (name, title, body) VALUES (\"reminder\", \"Требование\", \"Оплатите кредит\")'); conn.commit()"
+-Добавление системы- 
+python -c "import sqlite3; conn = sqlite3.connect('notifications.db'); cur = conn.cursor(); cur.execute('INSERT INTO info_systems (name, description, template_id, default_user_id) VALUES (\"CRM\", \"Система банковских счетов\", 1, 1)'); conn.commit(); print('Инфосистема добавлена, id=', cur.lastrowid)"
