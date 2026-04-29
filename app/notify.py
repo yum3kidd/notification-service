@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
+from sqlalchemy.orm import Session
 from pydantic import BaseModel, Field
 from typing import Optional
 from app.database import get_db
@@ -16,24 +15,15 @@ class NotifyRequest(BaseModel):
     transport: str
 
 @router.post("/notify")
-async def create_notification(request: NotifyRequest, db: AsyncSession = Depends(get_db)):
-    # Проверяем шаблон
-    result = await db.execute(select(NotificationTemplate).where(NotificationTemplate.id == request.template_id))
-    template = result.scalar_one_or_none()
+def create_notification(request: NotifyRequest, db: Session = Depends(get_db)):
+    template = db.query(NotificationTemplate).filter(NotificationTemplate.id == request.template_id).first()
     if not template:
         raise HTTPException(status_code=404, detail="Template not found")
-    
-    # Проверяем инфосистему
-    result = await db.execute(select(InfoSystem).where(InfoSystem.id == request.information_system_id))
-    info_system = result.scalar_one_or_none()
+    info_system = db.query(InfoSystem).filter(InfoSystem.id == request.information_system_id).first()
     if not info_system:
         raise HTTPException(status_code=404, detail="Info system not found")
-    
-    # Проверяем транспорт
     if request.transport not in ["vk", "max", "email"]:
         raise HTTPException(status_code=400, detail="Invalid transport")
-    
-    # Создаём уведомление
     notification = Notification(
         template_id=request.template_id,
         information_system_id=request.information_system_id,
@@ -43,7 +33,6 @@ async def create_notification(request: NotifyRequest, db: AsyncSession = Depends
         status="pending"
     )
     db.add(notification)
-    await db.commit()
-    await db.refresh(notification)
-    
+    db.commit()
+    db.refresh(notification)
     return {"status": "success", "notification_id": notification.id}

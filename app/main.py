@@ -16,10 +16,13 @@ app.add_middleware(
 app.include_router(router)
 
 @app.on_event("startup")
-async def init_db():
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+def init_db():
+    # Создаём таблицы, если их нет
+    Base.metadata.create_all(bind=engine)
+    # Добавляем тестовые данные
+    from app.init_data import init_test_data
+    init_test_data()
 
 @app.get("/")
-async def root():
+def root():
     return {"message": "Notification API Proxy running"}
