@@ -1,28 +1,6 @@
-# Виртуальное окружение
 venv/
-env/
-ENV/
-
-# Кэш Python и скомпилированные файлы
 __pycache__/
-*.py[cod]
-*.so
-
-# Файлы IDE (VS Code и т.д.)
-.vscode/
-.idea/
-
-# Наши локальные БД и тестовые файлы
-notifications.db
-test.py
-test_pg.py
-check_env.py
-add_data.py
-view_db.py
-show_tables.py
-check_notification.py
-*.sql
-
-
-# Переменные окружения с секретами
+*.db
 .env
+notifications.db
+*.pyc
