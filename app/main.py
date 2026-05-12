@@ -19,9 +19,6 @@ app.include_router(router)
 def init_db():
     # Создаём таблицы, если их нет
     Base.metadata.create_all(bind=engine)
-    # Добавляем тестовые данные
-    from app.init_data import init_test_data
-    init_test_data()
 
 @app.get("/")
 def root():

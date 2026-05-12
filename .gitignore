@@ -1,6 +1,18 @@
+# Python
 venv/
 __pycache__/
-*.db
-.env
-notifications.db
 *.pyc
+
+# Environment
+.env
+
+# Database
+*.db
+notifications.db
+
+# Docker
+*.log
+
+# IDE
+.vscode/
+.idea/
